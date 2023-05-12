@@ -31,7 +31,7 @@ def convertTable(d):
     if len(d) == 0:
         return "[]"
     else:
-        raise Exception('Non-empty table defaults not supported ' + d)
+        raise Exception(f'Non-empty table defaults not supported {d}')
 
 erlangDefaultValueTypeConvMap = {
     bool : lambda x: str(x).lower(),
@@ -47,9 +47,11 @@ def erlangize(s):
     s = s.replace(' ', '_')
     return s
 
-AmqpMethod.erlangName = lambda m: "'" + erlangize(m.klass.name) + '.' + erlangize(m.name) + "'"
+AmqpMethod.erlangName = (
+    lambda m: f"'{erlangize(m.klass.name)}.{erlangize(m.name)}'"
+)
 
-AmqpClass.erlangName = lambda c: "'" + erlangize(c.name) + "'"
+AmqpClass.erlangName = lambda c: f"'{erlangize(c.name)}'"
 
 def erlangConstantName(s):
     return '_'.join(re.split('[- ]', s.upper()))
@@ -71,15 +73,10 @@ class PackedMethodBitField:
 
 def multiLineFormat(things, prologue, separator, lineSeparator, epilogue, thingsPerLine = 4):
     r = [prologue]
-    i = 0
-    for t in things:
+    for i, t in enumerate(things):
         if i != 0:
-            if i % thingsPerLine == 0:
-                r += [lineSeparator]
-            else:
-                r += [separator]
+            r += [lineSeparator] if i % thingsPerLine == 0 else [separator]
         r += [t]
-        i += 1
     r += [epilogue]
     return "".join(r)
 
